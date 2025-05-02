@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoadSnap OCR - Manager Dashboard Wireframe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md">
+    <div class="py-4 px-6 font-bold text-xl text-blue-800">LoadSnap OCR</div>
+    <nav class="mt-6">
+      <a href="#pending" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Pending Tickets</a>
+      <a href="#fix" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Fix Queue</a>
+      <a href="#approved" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Approved Tickets</a>
+      <a href="#search" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Search & Export</a>
+    </nav>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="flex-1 p-6">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-semibold text-blue-800">Pending Tickets</h1>
+      <button class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">Logout</button>
+    </header>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Pending Tickets</p>
+        <p class="text-2xl font-bold text-blue-800">12</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Fix Queue</p>
+        <p class="text-2xl font-bold text-orange-600">3</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Approved Today</p>
+        <p class="text-2xl font-bold text-green-600">8</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Total Approved</p>
+        <p class="text-2xl font-bold text-gray-800">150</p>
+      </div>
+    </div>
+
+    <!-- Pending Tickets Table -->
+    <div id="pending" class="bg-white rounded shadow overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ticket #</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Submitted By</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <!-- Example Row -->
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">123</td>
+            <td class="px-6 py-4 whitespace-nowrap">driver1@example.com</td>
+            <td class="px-6 py-4 whitespace-nowrap">May 1, 2025</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button class="text-green-600 hover:text-green-800 mr-2">Approve</button>
+              <button class="text-red-600 hover:text-red-800">Reject</button>
+            </td>
+          </tr>
+          <!-- More rows... -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fix Queue – LoadSnap OCR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="fix.js" defer></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-5xl mx-auto bg-white rounded shadow p-6 flex gap-6">
+    <!-- Left: Form -->
+    <div id="fixFormContainer" class="w-1/2 space-y-4">
+      <h2 class="text-xl font-bold">Ticket #<span id="ticketId"></span></h2>
+      <label class="block">
+        <span class="text-gray-700">OCR Text (editable)</span>
+        <textarea id="ocrText" class="mt-1 block w-full border rounded p-2" rows="6"></textarea>
+      </label>
+      <label class="block">
+        <span class="text-gray-700">Notes</span>
+        <textarea id="notes" class="mt-1 block w-full border rounded p-2" rows="4"></textarea>
+      </label>
+      <div class="flex space-x-4">
+        <button id="approveBtn" class="bg-green-600 text-white px-4 py-2 rounded">Approve</button>
+        <button id="rejectBtn" class="bg-red-600 text-white px-4 py-2 rounded">Discard</button>
+      </div>
+    </div>
+
+    <!-- Right: Image Preview -->
+    <div id="imageContainer" class="w-1/2 flex items-center justify-center">
+      <img id="ticketImage" src="" alt="Ticket scan" class="max-h-96 rounded shadow cursor-pointer" />
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!-- public/manager_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LoadSnap Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="tailwind.css" rel="stylesheet" />
+  <script type="module" src="./manager.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-[#0069A7] text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">LoadSnap Manager Dashboard</h1>
+    <button id="logoutButton"
+            class="bg-[#FFC629] hover:bg-yellow-400 text-[#482366] font-semibold py-2 px-4 rounded">
+      Logout
+    </button>
+  </header>
+
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator"
+       class="flex-1 flex items-center justify-center text-gray-500">
+    Loading dashboard…
+  </div>
+
+  <!-- Access Denied -->
+  <div id="roleDeniedMessage"
+       class="hidden flex-1 items-center justify-center text-red-600 font-semibold">
+    You do not have manager access.
+  </div>
+
+  <!-- Dashboard Grid -->
+  <main id="dashboardSection"
+        class="hidden flex-1 p-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <!-- Ticket cards will be injected here by manager.js -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t p-4 text-center text-gray-500">
+    © 2025 Illumine Networks
+  </footer>
+
+</body>
+</html>

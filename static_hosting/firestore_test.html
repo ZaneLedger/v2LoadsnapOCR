@@ -1,0 +1,77 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Firestore Minimal Write Test</title>
+        <style>
+            body { font-family: sans-serif; padding: 20px; }
+            button { padding: 10px 15px; font-size: 16px; cursor: pointer; margin-right: 10px;}
+            #status { margin-top: 15px; font-weight: bold; }
+            .success { color: green; }
+            .error { color: red; }
+        </style>
+        <script src="./firebase.js" type="module"></script>
+
+        <script type="module">
+            // Import only necessary v9 modular functions and initialized services
+            import { firestore } from './firebase.js'; 
+            import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const writeButton = document.getElementById('writeButton');
+                const statusDiv = document.getElementById('status');
+
+                if (!writeButton || !statusDiv) {
+                    console.error("Button or status div not found!");
+                    return;
+                }
+                 if (!firestore) {
+                    statusDiv.textContent = 'Error: Firestore service not initialized in firebase.js!';
+                    statusDiv.className = 'error';
+                    console.error("Firestore instance is not available from firebase.js.");
+                    return;
+                }
+
+                writeButton.addEventListener('click', async () => {
+                    statusDiv.textContent = 'Attempting Firestore write...';
+                    statusDiv.className = 'info';
+                    writeButton.disabled = true;
+
+                    try {
+                        console.log("Minimal Test: Attempting write...");
+                        // Use v9 modular collection() and addDoc()
+                        const testCollectionRef = collection(firestore, 'minimalTestWrites'); 
+                        const docData = {
+                            message: "Minimal test write successful!",
+                            timestamp: serverTimestamp() // v9 serverTimestamp()
+                        };
+                        
+                        const docRef = await addDoc(testCollectionRef, docData); 
+                        
+                        console.log("Minimal Test: Document written with ID: ", docRef.id);
+                        statusDiv.textContent = `Success! Document written with ID: ${docRef.id}`;
+                        statusDiv.className = 'success';
+
+                    } catch (error) {
+                        console.error("Minimal Test: Error writing document (v9): ", error);
+                        statusDiv.textContent = `Error writing document: ${error.message}`;
+                        statusDiv.className = 'error';
+                        // Log the full error object for more details
+                        console.error("Full error object:", error); 
+                    
+                    } finally {
+                        writeButton.disabled = false;
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Firestore Minimal Write Test</h1>
+        <p>This page attempts a single write to a 'minimalTestWrites' collection.</p>
+        <button id="writeButton">Attempt Write</button>
+        <div id="status">Click the button to test.</div>
+    </body>
+    </html>
+    

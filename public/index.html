@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoadSnap OCR - Upload/Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="./firebase.js" type="module"></script>
+
+  <script src="./uploader.js" type="module" defer></script>
+
+  </head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+  <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+    
+    <div id="loginSection">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800 text-center">Login to Upload</h1>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="loginEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="loginEmail" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="loginPassword" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="loginPassword" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <button type="submit" id="loginButton" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+                Sign in
+            </button>
+            <p id="loginError" class="text-red-500 text-xs text-center h-4 mt-2"></p>
+        </form>
+    </div>
+
+    <div id="uploadContainer" class="text-center hidden"> 
+      <h1 class="text-3xl font-bold mb-2 text-gray-800">Upload Ticket</h1>
+      
+      <div class="flex justify-between items-center mb-6 h-5">
+          <span id="authStatus" class="text-sm text-gray-600"></span> 
+          <button id="logoutButton" class="text-sm text-red-600 hover:text-red-800 hover:underline font-medium">Logout</button> 
+      </div>
+
+      <input type="file" id="fileInput" accept="image/*" class="hidden"> 
+      
+      <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 bg-gray-50 transition-colors duration-200 ease-in-out">
+        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <p id="dropZoneText" class="mt-2 text-sm text-gray-500">Drag & drop image file here</p>
+        <p class="text-xs text-gray-400 mt-1">or</p>
+        <button id="selectFileButton" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition duration-150 ease-in-out">
+          Select File
+        </button>
+        <p id="fileError" class="text-red-500 text-xs mt-2 h-4"></p> 
+      </div>
+
+      <div id="fileInfo" class="text-left text-sm mt-4 hidden border-t pt-4">
+        <p class="font-medium text-gray-700">Selected File:</p>
+        <div class="flex items-center mt-2 bg-gray-50 p-3 rounded border">
+           <img id="imagePreview" src="#" alt="Preview" class="w-16 h-16 object-cover rounded mr-3 border hidden">
+           <div class="flex-1">
+              <p class="font-semibold text-gray-800" id="fileName"></p>
+              <p class="text-xs text-gray-500" id="fileSize"></p>
+              <button id="removeFileButton" class="text-red-500 hover:text-red-700 text-xs font-medium mt-1">Remove</button>
+           </div>
+        </div>
+      </div>
+
+      <button id="uploadButton" class="mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded w-full disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out" disabled>
+        Upload Ticket
+      </button>
+
+      <div id="progressBarContainer" class="mt-4 w-full bg-gray-200 rounded-full h-2.5 hidden overflow-hidden">
+        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-linear" style="width: 0%"></div>
+      </div>
+      <p id="progressText" class="text-sm text-gray-600 mt-1 h-5"></p> 
+
+      <div class="mt-8 border-t pt-4 text-center">
+         <p class="text-xs text-gray-500 mb-2">Need to enter data without an image?</p>
+         <button id="manualEntryButton" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+           Go to Manual Entry
+         </button>
+      </div>
+      
+    </div> </div> <script type="module">
+      // Import v9 modular auth functions
+      import { auth } from './firebase.js'; // Get the initialized auth instance
+      import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+      document.addEventListener('DOMContentLoaded', () => {
+          const loginSection = document.getElementById('loginSection');
+          const uploadContainer = document.getElementById('uploadContainer'); 
+          const loginForm = document.getElementById('loginForm');
+          const loginEmailInput = document.getElementById('loginEmail');
+          const loginPasswordInput = document.getElementById('loginPassword');
+          const loginButton = document.getElementById('loginButton');
+          const loginError = document.getElementById('loginError');
+          const logoutButton = document.getElementById('logoutButton'); 
+          const authStatus = document.getElementById('authStatus'); 
+
+          // Function to handle Login using v9 modular syntax
+          async function handleLogin(event) {
+              event.preventDefault();
+              if (!auth) {
+                  if(loginError) loginError.textContent = 'Auth service not ready.';
+                  return;
+              }
+              const email = loginEmailInput.value;
+              const password = loginPasswordInput.value;
+              if(loginButton) loginButton.disabled = true;
+              if(loginButton) loginButton.textContent = 'Signing in...';
+              if(loginError) loginError.textContent = ''; // Clear previous errors
+
+              try {
+                  await signInWithEmailAndPassword(auth, email, password);
+                  // Auth state change will handle UI update (handled by listener in uploader.js)
+                  console.log('Login successful (v9)'); 
+              } catch (error) {
+                  console.error('Login failed (v9):', error);
+                  if(loginError) loginError.textContent = error.message; // Show Firebase error message
+              } finally {
+                  if(loginButton) loginButton.disabled = false;
+                  if(loginButton) loginButton.textContent = 'Sign in';
+              }
+          }
+
+          // Function to handle Logout using v9 modular syntax
+          async function handleLogout() {
+              if (!auth) return;
+              try {
+                  await signOut(auth);
+                  console.log('Logout successful (v9)');
+                   // Auth state change will handle UI update (handled by listener in uploader.js)
+              } catch (error) {
+                  console.error('Logout failed (v9):', error);
+              }
+          }
+
+          // Attach listeners
+          if (loginForm) {
+              loginForm.addEventListener('submit', handleLogin);
+          }
+          if (logoutButton) {
+              logoutButton.addEventListener('click', handleLogout);
+          }
+
+          // Initial UI state check + listener (v9 syntax)
+          // This should ideally be consolidated with the listener in uploader.js
+          if (auth) {
+              onAuthStateChanged(auth, (user) => {
+                 const isLoggedIn = !!user;
+                 if (isLoggedIn) {
+                     if(loginSection) loginSection.classList.add('hidden');
+                     if(uploadContainer) uploadContainer.classList.remove('hidden');
+                 } else {
+                     if(loginSection) loginSection.classList.remove('hidden');
+                     if(uploadContainer) uploadContainer.classList.add('hidden');
+                 }
+              });
+          } else {
+              console.error("Auth service not initialized for UI state check.");
+          }
+
+      });
+  </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /tickets/{ticketId} {
+      allow read: if isManager() || isTicketOwner();
+      allow write: if isManager();
+    }
+
+    match /manager_emails/{email} {
+      allow read, write: if isAdmin();
+    }
+
+    match /exports/{exportId} {
+      allow read: if isManager();
+      allow write: if isFunction();
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isManager() {
+      return isSignedIn() && request.auth.token.claims.role == "manager";
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.claims.role == "admin";
+    }
+
+    function isFunction() {
+      return isSignedIn() && request.auth.token.claims.role == "function";
+    }
+
+    function isTicketOwner() {
+      return isSignedIn() && request.auth.uid == resource.data.user_id;
+    }
+  }
+}
