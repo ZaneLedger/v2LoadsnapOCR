@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Ticket – LoadSnap OCR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./driver_upload.js"></script>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-6 bg-[url('/camera-bg.jpg')] bg-cover bg-center">
+  <div class="bg-white/90 backdrop-blur-md shadow-lg rounded-lg max-w-md w-full p-6 space-y-5">
+    <h1 class="text-xl font-bold text-blue-800 text-center">Scan or Upload Ticket</h1>
+
+    <!-- Camera Option -->
+    <label for="cameraInput" class="cursor-pointer block rounded-lg border-2 border-dashed border-blue-600 p-6 text-center hover:bg-blue-50 transition">
+      <div class="flex flex-col items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h2l2-2h10l2 2h2v12H3V7z" />
+        </svg>
+        <p class="text-blue-700 font-semibold">Take a Photo (Camera)</p>
+      </div>
+    </label>
+    <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
+
+    <!-- Upload Option -->
+    <label for="fileInput" class="cursor-pointer block rounded-lg border-2 border-gray-300 p-4 text-center hover:bg-gray-100 transition">
+      <p class="text-gray-700 font-medium">Upload from Device</p>
+    </label>
+    <input id="fileInput" type="file" accept="image/*" class="hidden" />
+
+    <!-- Upload Button -->
+    <button id="uploadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold">
+      Upload Ticket
+    </button>
+
+    <div id="status" class="text-center text-sm text-gray-600">Choose a method to submit your ticket.</div>
+  </div>
+</body>
+</html>

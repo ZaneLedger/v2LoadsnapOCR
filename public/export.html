@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Export & Search – LoadSnap OCR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./export.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+
+    <h1 class="text-2xl font-bold text-blue-800 mb-4">Search & Export Tickets</h1>
+
+    <form id="searchForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-6">
+      <div>
+        <label class="block text-sm text-gray-700 font-medium mb-1">Start Date</label>
+        <input type="date" id="startDate" class="w-full border px-3 py-2 rounded" required />
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 font-medium mb-1">End Date</label>
+        <input type="date" id="endDate" class="w-full border px-3 py-2 rounded" required />
+      </div>
+      <div>
+        <label class="block text-sm text-gray-700 font-medium mb-1">Status</label>
+        <select id="statusFilter" class="w-full border px-3 py-2 rounded">
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="fixed">Fixed</option>
+          <option value="discarded">Discarded</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
+          Search
+        </button>
+        <button type="button" id="exportBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
+          Export XLSX
+        </button>
+      </div>
+    </form>
+
+    <div id="resultsContainer" class="overflow-x-auto">
+      <table class="min-w-full bg-white text-sm border border-gray-200 rounded shadow">
+        <thead class="bg-gray-50 text-left">
+          <tr>
+            <th class="px-4 py-2 border-b">Ticket #</th>
+            <th class="px-4 py-2 border-b">Date</th>
+            <th class="px-4 py-2 border-b">Driver</th>
+            <th class="px-4 py-2 border-b">Weight</th>
+            <th class="px-4 py-2 border-b">Status</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTableBody">
+          <!-- JS will populate rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

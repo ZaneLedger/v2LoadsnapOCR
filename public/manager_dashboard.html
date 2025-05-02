@@ -1,46 +1,58 @@
-<!-- public/manager_dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LoadSnap Manager Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="tailwind.css" rel="stylesheet" />
+  <title>LoadSnap OCR - Manager Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
   <script type="module" src="./manager.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen flex">
 
-  <!-- Header -->
-  <header class="bg-[#0069A7] text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold">LoadSnap Manager Dashboard</h1>
-    <button id="logoutButton"
-            class="bg-[#FFC629] hover:bg-yellow-400 text-[#482366] font-semibold py-2 px-4 rounded">
-      Logout
-    </button>
-  </header>
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md">
+    <div class="py-4 px-6 font-bold text-xl text-blue-800">LoadSnap OCR</div>
+    <nav class="mt-6">
+      <a href="#pending" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Pending Tickets</a>
+      <a href="#fix" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Fix Queue</a>
+      <a href="#approved" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Approved Tickets</a>
+      <a href="#search" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Search & Export</a>
+    </nav>
+  </aside>
 
-  <!-- Loading Indicator -->
-  <div id="loadingIndicator"
-       class="flex-1 flex items-center justify-center text-gray-500">
-    Loading dashboard…
-  </div>
+  <!-- Main Content -->
+  <main class="flex-1 p-6" id="dashboardContent">
 
-  <!-- Access Denied -->
-  <div id="roleDeniedMessage"
-       class="hidden flex-1 items-center justify-center text-red-600 font-semibold">
-    You do not have manager access.
-  </div>
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-semibold text-blue-800">Manager Dashboard</h1>
+      <button id="logoutButton" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+        Logout
+      </button>
+    </header>
 
-  <!-- Dashboard Grid -->
-  <main id="dashboardSection"
-        class="hidden flex-1 p-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-    <!-- Ticket cards will be injected here by manager.js -->
-  </main>
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Pending Tickets</p>
+        <p class="text-2xl font-bold text-blue-800" id="pendingCount">–</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Fix Queue</p>
+        <p class="text-2xl font-bold text-orange-600" id="fixCount">–</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Approved Today</p>
+        <p class="text-2xl font-bold text-green-600" id="approvedTodayCount">–</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Total Approved</p>
+        <p class="text-2xl font-bold text-gray-800" id="totalApprovedCount">–</p>
+      </div>
+    </div>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t p-4 text-center text-gray-500">
-    © 2025 Illumine Networks
-  </footer>
-
-</body>
-</html>
+    <!-- Pending Tickets Table -->
+    <section id="pending" class="bg-white rounded shadow overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead

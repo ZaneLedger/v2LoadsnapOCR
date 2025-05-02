@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manual Ticket Entry – LoadSnap OCR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./manual_entry.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-lg rounded-lg max-w-md w-full p-6 space-y-6 border-t-4 border-[#0069A7]">
+    <h1 class="text-xl font-bold text-[#0069A7] text-center">Manual Ticket Entry</h1>
+
+    <form id="manualForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Ticket Number</label>
+        <input id="ticketNumber" type="text" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Truck ID</label>
+        <input id="truckNumber" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Weight (tons)</label>
+        <input id="weightTons" type="number" step="0.01" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Driver Name</label>
+        <input id="driverActual" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <button type="submit" class="w-full bg-[#FFC629] hover:bg-yellow-400 text-[#482366] font-semibold py-2 rounded">
+        Submit Ticket
+      </button>
+    </form>
+
+    <div id="status" class="text-center text-sm text-green-600 hidden">✅ Ticket submitted successfully.</div>
+    <div id="error" class="text-center text-sm text-red-600 hidden">❌ Error submitting ticket.</div>
+  </div>
+</body>
+</html>
