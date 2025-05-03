@@ -11,10 +11,26 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "headers": [
+      {
+        "source": "**/*.js",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/javascript"
+          }
+        ]
+      }
+    ],
+    "cleanUrls": true,
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/manager_dashboard.html",
+        "destination": "/manager_dashboard.html"
+      },
+      {
+        "source": "/**",
+        "destination": "/404.html"  // This will show the 404 page for any unknown routes
       }
     ]
   },

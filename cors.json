@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://loadsnap-prod.web.app"],
+    "method": ["GET", "POST", "PUT", "HEAD", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Authorization", "X-Requested-With", "X-Goog-Resumable"],
+    "maxAgeSeconds": 3600
+  }
+]

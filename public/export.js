@@ -2,8 +2,7 @@ import { auth, db, functions } from "./firebase.js";
 import {
   signInWithPopup,
   GoogleAuthProvider,
-  onAuthStateChanged,
-  getIdTokenResult
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import {
   collection,
@@ -18,22 +17,25 @@ import { httpsCallable } from "https://www.gstatic.com/firebasejs/9.22.1/firebas
 const form = document.getElementById("searchForm");
 const exportBtn = document.getElementById("exportBtn");
 const resultsTableBody = document.getElementById("resultsTableBody");
+const statusMsg = document.getElementById("statusMessage");
 
-// Auth check
+let currentUser = null;
+
+// 🔐 Simplified Auth
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    await signInWithPopup(auth, new GoogleAuthProvider());
-    return;
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Login required.");
+      return;
+    }
   }
-
-  const tokenResult = await getIdTokenResult(user, true);
-  if (tokenResult.claims.role !== "manager") {
-    alert("Access denied – manager role required.");
-    window.location.href = "manager_dashboard.html";
-  }
+  currentUser = user;
 });
 
-// 🧠 Helper: Parse date string into Firestore Timestamp
+// 🔄 Timestamp conversion
 function toStartOfDayTS(dateStr) {
   const d = new Date(dateStr);
   d.setHours(0, 0, 0, 0);
@@ -48,6 +50,7 @@ function toEndOfDayTS(dateStr) {
 // 🔍 Handle search
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
+  statusMsg.textContent = "Searching...";
   resultsTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-500">Searching...</td></tr>`;
 
   const start = form.startDate.value;
@@ -70,6 +73,8 @@ form?.addEventListener("submit", async (e) => {
     const q = query(collection(db, "tickets"), ...conditions);
     const snapshot = await getDocs(q);
 
+    statusMsg.textContent = `${snapshot.size} tickets found.`;
+
     if (snapshot.empty) {
       resultsTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-500">No results found.</td></tr>`;
       return;
@@ -91,11 +96,12 @@ form?.addEventListener("submit", async (e) => {
 
   } catch (err) {
     console.error("❌ Search failed:", err);
+    statusMsg.textContent = "Error during search.";
     resultsTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-600 py-4">Error loading results.</td></tr>`;
   }
 });
 
-// ⬇️ Export XLSX
+// 📥 Export XLSX
 exportBtn?.addEventListener("click", async () => {
   const start = form.startDate.value;
   const end = form.endDate.value;
@@ -107,6 +113,7 @@ exportBtn?.addEventListener("click", async () => {
 
   exportBtn.disabled = true;
   exportBtn.textContent = "Exporting...";
+  statusMsg.textContent = "Generating Excel file...";
 
   try {
     const callable = httpsCallable(functions, "exportTicketsToXLSX");
@@ -114,9 +121,12 @@ exportBtn?.addEventListener("click", async () => {
 
     const url = result.data.url;
     window.open(url, "_blank");
+    statusMsg.textContent = "✅ Export ready.";
+
   } catch (err) {
     console.error("❌ Export failed:", err);
     alert("Export failed. Check console for details.");
+    statusMsg.textContent = "❌ Export failed.";
   }
 
   exportBtn.disabled = false;

@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Export & Search – LoadSnap OCR</title>
+  <title>Search & Export – LoadSnap OCR</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="./firebase.js"></script>
   <script type="module" src="./export.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow space-y-6">
 
-    <h1 class="text-2xl font-bold text-blue-800 mb-4">Search & Export Tickets</h1>
+    <h1 class="text-2xl font-bold text-blue-800">Search & Export Tickets</h1>
 
-    <form id="searchForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-6">
+    <form id="searchForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
       <div>
-        <label class="block text-sm text-gray-700 font-medium mb-1">Start Date</label>
-        <input type="date" id="startDate" class="w-full border px-3 py-2 rounded" required />
+        <label for="startDate" class="block text-sm text-gray-700 font-medium mb-1">Start Date</label>
+        <input type="date" id="startDate" required class="w-full border px-3 py-2 rounded" />
       </div>
       <div>
-        <label class="block text-sm text-gray-700 font-medium mb-1">End Date</label>
-        <input type="date" id="endDate" class="w-full border px-3 py-2 rounded" required />
+        <label for="endDate" class="block text-sm text-gray-700 font-medium mb-1">End Date</label>
+        <input type="date" id="endDate" required class="w-full border px-3 py-2 rounded" />
       </div>
       <div>
-        <label class="block text-sm text-gray-700 font-medium mb-1">Status</label>
+        <label for="statusFilter" class="block text-sm text-gray-700 font-medium mb-1">Status</label>
         <select id="statusFilter" class="w-full border px-3 py-2 rounded">
           <option value="">All</option>
           <option value="pending">Pending</option>
@@ -42,6 +42,8 @@
       </div>
     </form>
 
+    <p id="statusMessage" class="text-sm text-gray-600"></p>
+
     <div id="resultsContainer" class="overflow-x-auto">
       <table class="min-w-full bg-white text-sm border border-gray-200 rounded shadow">
         <thead class="bg-gray-50 text-left">
@@ -54,10 +56,17 @@
           </tr>
         </thead>
         <tbody id="resultsTableBody">
-          <!-- JS will populate rows -->
+          <tr>
+            <td colspan="5" class="px-4 py-6 text-center text-gray-500">No results yet.</td>
+          </tr>
         </tbody>
       </table>
     </div>
+
+    <div class="text-center">
+      <a href="./manager_dashboard.html" class="text-sm text-blue-600 hover:underline">← Return to Manager Dashboard</a>
+    </div>
+
   </div>
 </body>
 </html>

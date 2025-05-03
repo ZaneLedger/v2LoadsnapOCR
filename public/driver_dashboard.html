@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Driver Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./driver_dashboard.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -16,51 +18,34 @@
 
   <!-- Upload CTA -->
   <section class="flex flex-col items-center py-6">
-    <a href="driver_upload.html" class="flex flex-col items-center text-blue-700 hover:text-blue-900">
-      <div class="w-16 h-16 mb-2 bg-blue-100 rounded-full flex items-center justify-center">
-        <span class="text-2xl">📷</span>
+    <a href="driver_upload.html" class="flex flex-col items-center text-blue-700 hover:text-blue-900 transition-transform hover:scale-105">
+      <div class="w-20 h-20 mb-3 bg-blue-100 rounded-full flex items-center justify-center shadow-lg ring-2 ring-blue-300">
+        <span class="text-3xl">📷</span>
       </div>
-      <span class="text-lg font-semibold">Upload / Scan Ticket</span>
+      <span class="text-xl font-bold">Upload / Scan Ticket</span>
     </a>
   </section>
 
-  <!-- Tickets List -->
-  <main class="px-4 space-y-4">
+  <!-- Tickets Section -->
+  <main class="px-4 space-y-6 mt-4">
+    <h2 class="text-lg font-bold mb-4">Your Tickets Needing Action</h2>
 
-    <!-- Fix Needed -->
-    <div class="border-l-4 pl-4 py-2 bg-yellow-50 border-yellow-500 rounded">
-      <p><span class="font-semibold">Ticket #:</span> 123456</p>
-      <p><span class="font-semibold">Status:</span> <span class="text-yellow-700 font-medium">Fix Needed</span></p>
-      <p><span class="font-semibold">Disposal Date:</span> 2025-04-30</p>
-      <div class="flex space-x-4 mt-2 text-sm">
-        <a href="ticket.html?id=123456" class="text-blue-600 hover:underline">View Ticket</a>
-        <a href="https://storage.googleapis.com/loadsnap/ticket_123456.jpg" target="_blank" class="text-blue-600 hover:underline">View Image</a>
-      </div>
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="hidden flex flex-col items-center justify-center text-center text-gray-500 mt-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13M9 5H5a2 2 0 00-2 2v12a2 2 0 002 2h4m0-2h6" />
+      </svg>
+      <p class="text-lg font-semibold">You’re all caught up</p>
+      <p class="text-sm mt-1">No tickets need action right now.</p>
     </div>
 
-    <!-- Rejected -->
-    <div class="border-l-4 pl-4 py-2 bg-red-50 border-red-500 rounded">
-      <p><span class="font-semibold">Ticket #:</span> 987654</p>
-      <p><span class="font-semibold">Status:</span> <span class="text-red-700 font-medium">Rejected</span></p>
-      <p><span class="font-semibold">Disposal Date:</span> 2025-04-28</p>
-      <div class="flex space-x-4 mt-2 text-sm">
-        <a href="ticket.html?id=987654" class="text-blue-600 hover:underline">View Ticket</a>
-        <a href="https://storage.googleapis.com/loadsnap/ticket_987654.jpg" target="_blank" class="text-blue-600 hover:underline">View Image</a>
-      </div>
-    </div>
-
+    <!-- TICKET CONTAINER -->
+    <div id="ticketContainer" class="space-y-6"></div>
   </main>
 
   <!-- Footer -->
-  <footer class="py-6 flex justify-center">
+  <footer class="py-8 flex justify-center">
     <a href="driver_history.html" class="text-sm text-gray-600 hover:underline">View Full History</a>
   </footer>
-
-  <script>
-    function logout() {
-      // Your Firebase logout logic here
-      console.log("Logged out (placeholder)");
-    }
-  </script>
 </body>
 </html>

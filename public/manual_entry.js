@@ -1,4 +1,4 @@
-import { auth, db } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -9,18 +9,31 @@ import {
   addDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
 // DOM Elements
 const form = document.getElementById("manualForm");
-const ticketNumber = document.getElementById("ticketNumber");
-const truckNumber = document.getElementById("truckNumber");
-const weightTons = document.getElementById("weightTons");
-const driverActual = document.getElementById("driverActual");
 const statusBox = document.getElementById("status");
 const errorBox = document.getElementById("error");
+const newEntryBtn = document.getElementById("newEntryBtn");
+
+// Form fields
+const F = (id) => document.getElementById(id);
+const fields = [
+  "ticketNumber", "weightTons", "truckNumber", "capacity",
+  "driverBadge", "driverActual", "debrisType", "loadCall",
+  "programJob", "DisposalDateTime", "contractor",
+  "disposalSiteFinal", "notes", "dms"
+];
+const imageInput = document.getElementById("imageInput");
 
 let currentUser = null;
 
+// 🔐 Auth
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     try {
@@ -33,30 +46,62 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+// 🧾 Submit Handler
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
   statusBox.classList.add("hidden");
   errorBox.classList.add("hidden");
 
+  if (!imageInput?.files[0]) {
+    errorBox.textContent = "Please attach a ticket image before submitting.";
+    errorBox.classList.remove("hidden");
+    return;
+  }
+
   try {
-    await addDoc(collection(db, "tickets"), {
-      ticketNumber: ticketNumber.value,
-      truckNumber: truckNumber.value,
-      weightTons: parseFloat(weightTons.value) || null,
-      driverActual: driverActual.value,
-      uploaderUid: auth.currentUser?.uid || null,
-      uploaderEmail: auth.currentUser?.email || null,
+    const uid = auth.currentUser?.uid || "anonymous";
+    const timestamp = Date.now();
+    const file = imageInput.files[0];
+    const path = `manual_uploads/${uid}/${timestamp}_${file.name}`;
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // Build Firestore ticket object
+    const ticketData = {
+      uploaderUid: uid,
+      uploaderEmail: auth.currentUser?.email || "unknown",
       manual: true,
       status: "pending",
       fixNeeded: false,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      storagePath: path,
+      imageUrl: downloadURL
+    };
+
+    // Append form values
+    fields.forEach((field) => {
+      const input = F(field);
+      ticketData[field] = input?.value || null;
     });
 
-    form.reset();
+    if (!ticketData.ticketNumber || !ticketData.weightTons || !ticketData.truckNumber || !ticketData.disposalSiteFinal) {
+      throw new Error("Missing required fields.");
+    }
+
+    await addDoc(collection(db, "tickets"), ticketData);
     statusBox.classList.remove("hidden");
 
   } catch (err) {
-    console.error("Submit error:", err);
+    console.error("❌ Submit error:", err);
+    errorBox.textContent = err.message || "Failed to submit ticket.";
     errorBox.classList.remove("hidden");
   }
+});
+
+// 🔁 Reset Form
+newEntryBtn?.addEventListener("click", () => {
+  form.reset();
+  statusBox.classList.add("hidden");
+  errorBox.classList.add("hidden");
 });

@@ -1,64 +1,77 @@
 import { auth, db } from "./firebase.js";
 import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-// DOM Elements
-const loading     = document.getElementById("loading");
-const ticketList  = document.getElementById("ticketList");
-const logoutBtn   = document.getElementById("logoutBtn");
+const ticketContainer = document.getElementById("ticketContainer");
+const emptyState = document.getElementById("emptyState");
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    await signInWithPopup(auth, new GoogleAuthProvider());
+    window.location.href = "login.html";
     return;
   }
 
   const q = query(
     collection(db, "tickets"),
-    where("uploaderUid", "==", user.uid)
+    where("uploaderUid", "==", user.uid),
+    where("status", "in", ["pending", "rejected", "draft"])
   );
 
   try {
-    const snap = await getDocs(q);
-    loading.classList.add("hidden");
-    ticketList.classList.remove("hidden");
-
-    if (snap.empty) {
-      ticketList.innerHTML = `<p class="text-gray-500 col-span-full text-center">No tickets submitted yet.</p>`;
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+      emptyState.classList.remove("hidden");
       return;
     }
 
-    snap.forEach(doc => {
-      const t = doc.data();
-      const card = document.createElement("div");
-      card.className = "bg-white rounded shadow p-4 space-y-1 border";
+    snapshot.forEach((doc) => {
+      const ticket = doc.data();
+      const div = document.createElement("div");
 
-      card.innerHTML = `
-        <h2 class="text-[#0069A7] font-bold text-lg">Ticket #${t.ticketNumber ?? doc.id}</h2>
-        <p class="text-sm"><strong>Status:</strong> ${t.status ?? "pending"}</p>
-        <p class="text-sm"><strong>Uploaded:</strong> ${t.timestamp?.toDate?.().toLocaleDateString() ?? "—"}</p>
-        ${t.fixNeeded ? `<p class="text-sm text-red-600">⚠️ Needs Manager Fix</p>` : ""}
+      let color, label;
+      switch (ticket.status) {
+        case "rejected":
+          color = "red";
+          label = "Rejected";
+          break;
+        case "draft":
+          color = "gray";
+          label = "Draft";
+          break;
+        case "pending":
+        default:
+          color = "yellow";
+          label = "Fix Needed";
+          break;
+      }
+
+      div.className = `border-l-4 pl-4 py-4 bg-${color}-50 border-${color}-500 rounded shadow`;
+      div.innerHTML = `
+        <p class="mb-1 text-base"><span class="font-semibold">Ticket #:</span> ${ticket.ticketNumber || "(missing)"}</p>
+        <p class="mb-1 text-base">
+          <span class="font-semibold">Status:</span>
+          <span class="inline-block px-2 py-1 text-xs font-bold rounded-full bg-${color}-200 text-${color}-900 shadow-sm">
+            ${label}
+          </span>
+        </p>
+        <p class="mb-2 text-base"><span class="font-semibold">Disposal Date:</span> ${ticket.DisposalDateTime || "N/A"}</p>
+        <div class="flex flex-wrap space-x-4 text-sm font-medium">
+          <a href="ticket.html?id=${doc.id}" class="text-blue-600 hover:underline">View Ticket</a>
+          <a href="${ticket.imageUrl || "#"}" target="_blank" class="text-blue-600 hover:underline">View Image</a>
+          <a href="manual_entry.html?ticketId=${doc.id}" class="text-blue-600 hover:underline">Fix This Ticket</a>
+        </div>
       `;
-
-      ticketList.appendChild(card);
+      ticketContainer.appendChild(div);
     });
   } catch (err) {
-    console.error("❌ Failed to load tickets:", err);
-    loading.textContent = "Failed to load your tickets.";
+    console.error("Error loading tickets:", err);
+    emptyState.classList.remove("hidden");
   }
-});
-
-// Logout handler
-logoutBtn?.addEventListener("click", () => {
-  signOut(auth).then(() => location.reload());
 });
