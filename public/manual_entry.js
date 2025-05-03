@@ -2,7 +2,8 @@ import { auth, db, storage } from "./firebase.js";
 import {
   signInWithPopup,
   GoogleAuthProvider,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import {
   collection,
@@ -33,7 +34,7 @@ const imageInput = document.getElementById("imageInput");
 
 let currentUser = null;
 
-// 🔐 Auth
+// 🔐 Auth Check
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     try {
@@ -59,7 +60,9 @@ form?.addEventListener("submit", async (e) => {
   }
 
   try {
-    const uid = auth.currentUser?.uid || "anonymous";
+    const user = auth.currentUser;
+    const uid = user?.uid || "anonymous";
+    const email = user?.email || "unknown";
     const timestamp = Date.now();
     const file = imageInput.files[0];
     const path = `manual_uploads/${uid}/${timestamp}_${file.name}`;
@@ -70,28 +73,33 @@ form?.addEventListener("submit", async (e) => {
     // Build Firestore ticket object
     const ticketData = {
       uploaderUid: uid,
-      uploaderEmail: auth.currentUser?.email || "unknown",
+      uploaderEmail: email,
       manual: true,
       status: "pending",
       fixNeeded: false,
       timestamp: serverTimestamp(),
       storagePath: path,
-      imageUrl: downloadURL
+      imageUrl: downloadURL,
     };
 
-    // Append form values
     fields.forEach((field) => {
       const input = F(field);
-      ticketData[field] = input?.value || null;
+      ticketData[field] = input?.value?.trim() || null;
     });
 
-    if (!ticketData.ticketNumber || !ticketData.weightTons || !ticketData.truckNumber || !ticketData.disposalSiteFinal) {
-      throw new Error("Missing required fields.");
+    // Basic validation
+    if (
+      !ticketData.ticketNumber ||
+      !ticketData.weightTons ||
+      !ticketData.truckNumber ||
+      !ticketData.disposalSiteFinal
+    ) {
+      throw new Error("Missing required fields: ticketNumber, weightTons, truckNumber, or disposalSiteFinal.");
     }
 
     await addDoc(collection(db, "tickets"), ticketData);
+    console.log("✅ Ticket submitted:", ticketData);
     statusBox.classList.remove("hidden");
-
   } catch (err) {
     console.error("❌ Submit error:", err);
     errorBox.textContent = err.message || "Failed to submit ticket.";
