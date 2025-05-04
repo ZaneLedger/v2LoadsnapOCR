@@ -1,3 +1,4 @@
+<!-- manager_dashboard.html (FIXED LINK TO FIX QUEUE) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
   <title>LoadSnap OCR - Manager Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="./firebase.js"></script>
-  <script type="module" src="./manager.js"></script>
+  <script type="module" src="./manager_dashboard.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
@@ -14,10 +15,18 @@
   <aside class="w-64 bg-white shadow-md">
     <div class="py-4 px-6 font-bold text-xl text-blue-800">LoadSnap OCR</div>
     <nav class="mt-6">
-      <a href="#pending" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Pending Tickets</a>
-      <a href="#fix" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Fix Queue</a>
-      <a href="#approved" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Approved Tickets</a>
-      <a href="#search" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">Search & Export</a>
+      <a href="manager_dashboard.html" class="block py-2 px-6 bg-blue-100 font-bold text-blue-800">
+        Pending Tickets
+      </a>
+      <a href="fix.html" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">
+        Fix Queue
+      </a>
+      <a href="approved.html" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">
+        Approved Tickets
+      </a>
+      <a href="export_search.html" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">
+        Search & Export
+      </a>
     </nav>
   </aside>
 
@@ -52,7 +61,10 @@
       </div>
     </div>
 
-    <!-- Pending Tickets Table -->
-    <section id="pending" class="bg-white rounded shadow overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead
+    <!-- Containers -->
+    <section id="pendingContainer" class="space-y-4 mb-8"></section>
+    <section id="fixContainer" class="space-y-4"></section>
+
+  </main>
+</body>
+</html>
