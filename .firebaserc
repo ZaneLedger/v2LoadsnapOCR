@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "loadsnap-prod"
+    "default": "loadsnap-prod",
+    "Prod": "loadsnap-prod"
   },
   "targets": {},
   "etags": {}

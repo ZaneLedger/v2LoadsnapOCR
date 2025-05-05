@@ -15,23 +15,16 @@
       {
         "source": "**/*.js",
         "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/javascript"
-          }
+          { "key": "Content-Type", "value": "application/javascript" }
         ]
       }
     ],
     "cleanUrls": true,
     "rewrites": [
-      {
-        "source": "/manager_dashboard.html",
-        "destination": "/manager_dashboard.html"
-      },
-      {
-        "source": "/**",
-        "destination": "/404.html"  // This will show the 404 page for any unknown routes
-      }
+      { "source": "/manager_dashboard.html",  "destination": "/manager_dashboard.html" },
+      { "source": "/driver_upload.html",      "destination": "/driver_upload.html" },
+      { "source": "/driver_dashboard.html",   "destination": "/driver_dashboard.html" },
+      { "source": "/**",                      "destination": "/404.html" }
     ]
   },
   "firestore": {

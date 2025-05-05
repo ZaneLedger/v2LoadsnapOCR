@@ -1,4 +1,6 @@
-// public/driver_upload.js
+// public/driver_upload.js (More Robust for Temporary Rules)
+
+// Ensure firebase.js is correctly configured and working!
 import { auth, db, storage } from "./firebase.js";
 import {
   signInWithPopup,
@@ -12,98 +14,158 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 import {
   ref,
-  uploadBytes,
-  getDownloadURL
+  uploadBytes
+  // getDownloadURL // Only needed if you use the URL client-side
 } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
-// DOM refs
-const loginBox       = document.getElementById("loginBox");
-const loginButton    = document.getElementById("loginButton");
-const uploadBox      = document.getElementById("uploadBox");
-const fileInput      = document.getElementById("fileInput");
-const cameraInput    = document.getElementById("cameraInput"); // only if used
-const uploadButton   = document.getElementById("uploadButton");
-const selectedFile   = document.getElementById("selectedFile");
-const statusMessage  = document.getElementById("statusMessage");
+// --- DOM References ---
+const loginBox = document.getElementById("loginBox");
+const loginButton = document.getElementById("loginButton");
+const uploadBox = document.getElementById("uploadBox");
+const fileInput = document.getElementById("fileInput");
+const cameraInput = document.getElementById("cameraInput"); // only if used
+const uploadButton = document.getElementById("uploadButton");
+const selectedFileDisplay = document.getElementById("selectedFile"); // Renamed for clarity
+const statusMessage = document.getElementById("statusMessage");
 
-let selectedImageFile = null;
+let selectedImageFile = null; // Store the selected File object
 
-// --- AUTH HANDLER ---
+// --- Auth Handler ---
 onAuthStateChanged(auth, async user => {
+  // Use optional chaining for safety in case elements aren't found immediately
   if (!user) {
-    loginBox.classList.remove("hidden");
-    uploadBox.classList.add("hidden");
-    return;
-  }
-
-  loginBox.classList.add("hidden");
-  uploadBox.classList.remove("hidden");
-});
-
-// --- LOGIN BUTTON ---
-loginButton?.addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, new GoogleAuthProvider());
-  } catch (err) {
-    console.error("Login failed:", err);
-    statusMessage.textContent = "Login failed. Please try again.";
+    loginBox?.classList.remove("hidden");
+    uploadBox?.classList.add("hidden");
+  } else {
+    loginBox?.classList.add("hidden");
+    uploadBox?.classList.remove("hidden");
   }
 });
 
-// --- FILE/CAMERA HANDLERS ---
-fileInput?.addEventListener("change", (e) => {
-  selectedImageFile = e.target.files[0];
-  selectedFile.textContent = selectedImageFile?.name || "";
-});
+// --- Login Button ---
+if (loginButton) {
+  loginButton.addEventListener("click", async () => {
+    if (statusMessage) statusMessage.textContent = ""; // Clear status
+    try {
+      console.log("Attempting Google Sign-In...");
+      await signInWithPopup(auth, new GoogleAuthProvider());
+      // onAuthStateChanged will handle UI changes
+      console.log("Sign-In successful (or popup closed).");
+    } catch (err) {
+      console.error("Login failed:", err);
+      if (statusMessage) statusMessage.textContent = `Login failed: ${err.code || err.message}`;
+    }
+  });
+} else {
+    console.warn("Login button not found.");
+}
 
-cameraInput?.addEventListener("change", (e) => {
-  selectedImageFile = e.target.files[0];
-  selectedFile.textContent = selectedImageFile?.name || "";
-});
+// --- File/Camera Handlers ---
+function handleFileSelection(event) {
+    // Check if files exist and have length
+    const file = event.target?.files?.[0]; // Use optional chaining
+    if (file) {
+        selectedImageFile = file;
+        if (selectedFileDisplay) selectedFileDisplay.textContent = selectedImageFile.name;
+        if (statusMessage) statusMessage.textContent = ""; // Clear status on new selection
+        console.log("File selected:", selectedImageFile.name);
+    } else {
+        selectedImageFile = null;
+        if (selectedFileDisplay) selectedFileDisplay.textContent = "";
+        console.log("File selection cleared or no file chosen.");
+    }
+}
 
-// --- UPLOAD LOGIC ---
-uploadButton?.addEventListener("click", async () => {
-  if (!auth.currentUser) {
-    statusMessage.textContent = "Please sign in to upload a ticket.";
-    return;
-  }
+if (fileInput) {
+  fileInput.addEventListener("change", handleFileSelection);
+} else {
+    console.warn("File input element not found.");
+}
+if (cameraInput) {
+  cameraInput.addEventListener("change", handleFileSelection);
+} // No warning if camera input is optional
 
-  if (!selectedImageFile) {
-    statusMessage.textContent = "Please select an image first.";
-    return;
-  }
+// --- Upload Logic ---
+if (uploadButton) {
+  uploadButton.addEventListener("click", async () => {
+    // --- Explicitly check currentUser before accessing properties ---
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      if (statusMessage) statusMessage.textContent = "Please sign in to upload a ticket.";
+      console.warn("Upload attempt failed: User not signed in.");
+      // Optionally trigger login again here if desired
+      return;
+    }
 
-  uploadButton.disabled = true;
-  statusMessage.textContent = "Uploading...";
+    if (!selectedImageFile) {
+      if (statusMessage) statusMessage.textContent = "Please select an image file first.";
+      console.warn("Upload attempt failed: No file selected.");
+      return;
+    }
 
-  try {
-    const uid = auth.currentUser.uid;
-    const timestamp = Date.now();
-    const path = `tickets/${uid}/${timestamp}_${selectedImageFile.name}`;
-    const storageRef = ref(storage, path);
+    // Disable button, show status
+    uploadButton.disabled = true;
+    if (statusMessage) statusMessage.textContent = "Uploading file...";
+    console.log("Upload started...");
 
-    await uploadBytes(storageRef, selectedImageFile);
+    try {
+      // --- Safe access to currentUser properties ---
+      const uid = currentUser.uid;
+      const email = currentUser.email || "unknown"; // Provide default if email missing
+      const timestamp = Date.now();
+      // Use a structured path, e.g., uploads/userId/timestamp_filename
+      // Ensure this path aligns with any backend function triggers if needed later
+      const path = `uploads/${uid}/${timestamp}_${selectedImageFile.name}`;
+      const storageRef = ref(storage, path);
 
-    // Create Firestore doc
-    await addDoc(collection(db, "tickets"), {
-      storagePath: path,
-      uploaderUid: uid,
-      uploaderEmail: auth.currentUser.email || "unknown",
-      timestamp: serverTimestamp(),
-      status: "pending",
-      fixNeeded: false
-    });
+      console.log(`Uploading to Storage path: ${path}`);
+      await uploadBytes(storageRef, selectedImageFile);
+      console.log("File uploaded to Storage successfully.");
 
-    statusMessage.textContent = "✅ Ticket uploaded!";
-    selectedImageFile = null;
-    fileInput.value = "";
-    if (cameraInput) cameraInput.value = "";
-    selectedFile.textContent = "";
+      // --- Direct Firestore Write (TEMPORARY - RELIES ON RELAXED RULES) ---
+      // WARNING: This direct client-side write MUST be removed and handled
+      // by a backend function (like processTicketOCR) once security rules are reverted.
+      console.log("Attempting direct Firestore write (Temporary Rule Dependent)...");
+      const docRef = await addDoc(collection(db, "tickets"), {
+        storagePath: path,
+        uploaderUid: uid,
+        uploaderEmail: email,
+        timestamp: serverTimestamp(), // Use server timestamp
+        status: "pending", // Initial status for backend processing
+        fixNeeded: false // Default value
+        // Add any other initial fields the backend might need
+      });
+      console.log("Firestore document created successfully with ID:", docRef.id);
+      // --- End Temporary Write Section ---
 
-  } catch (err) {
-    console.error("Upload failed:", err);
-    statusMessage.textContent = "❌ Upload failed. Try again.";
-  } finally {
-    uploadButton.disabled = false;
-  }
-});
+      if (statusMessage) statusMessage.textContent = "✅ Ticket uploaded successfully! Processing...";
+
+      // Reset form state
+      selectedImageFile = null;
+      if (fileInput) fileInput.value = ""; // Clear file input
+      if (cameraInput) cameraInput.value = "";
+      if (selectedFileDisplay) selectedFileDisplay.textContent = "";
+
+    } catch (err) {
+      console.error("❌ Upload failed:", err);
+      // Provide more specific error feedback if possible
+      let errorMsg = "❌ Upload failed. Please try again.";
+      if (err.code && err.code.startsWith('storage/')) {
+          errorMsg = `❌ Storage Error: ${err.message}`;
+      } else if (err.code && err.code.startsWith('permission-denied')) {
+          // This shouldn't happen with relaxed rules, but good to check
+          errorMsg = "❌ Permission Error: Check Firestore rules.";
+      } else if (err.message) {
+          errorMsg = `❌ Error: ${err.message}`;
+      }
+      if (statusMessage) statusMessage.textContent = errorMsg;
+    } finally {
+      // Re-enable button
+      uploadButton.disabled = false;
+      console.log("Upload process finished.");
+    }
+  });
+} else {
+    console.warn("Upload button not found.");
+}
+
