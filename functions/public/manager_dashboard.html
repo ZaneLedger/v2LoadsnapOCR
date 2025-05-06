@@ -1,0 +1,70 @@
+<!-- manager_dashboard.html (FIXED LINK TO FIX QUEUE) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoadSnap OCR - Manager Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./manager_dashboard.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md">
+    <div class="py-4 px-6 font-bold text-xl text-blue-800">LoadSnap OCR</div>
+    <nav class="mt-6">
+      <a href="manager_dashboard.html" class="block py-2 px-6 bg-blue-100 font-bold text-blue-800">
+        Pending Tickets
+      </a>
+      <a href="fix.html" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">
+        Fix Queue
+      </a>
+      <a href="approved.html" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">
+        Approved Tickets
+      </a>
+      <a href="export_search.html" class="block py-2 px-6 hover:bg-blue-50 text-blue-700">
+        Search & Export
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6" id="dashboardContent">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-semibold text-blue-800">Manager Dashboard</h1>
+      <button id="logoutButton" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+        Logout
+      </button>
+    </header>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Pending Tickets</p>
+        <p class="text-2xl font-bold text-blue-800" id="pendingCount">–</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Fix Queue</p>
+        <p class="text-2xl font-bold text-orange-600" id="fixCount">–</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Approved Today</p>
+        <p class="text-2xl font-bold text-green-600" id="approvedTodayCount">–</p>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <p class="text-sm text-gray-500">Total Approved</p>
+        <p class="text-2xl font-bold text-gray-800" id="totalApprovedCount">–</p>
+      </div>
+    </div>
+
+    <!-- Containers -->
+    <section id="pendingContainer" class="space-y-4 mb-8"></section>
+    <section id="fixContainer" class="space-y-4"></section>
+
+  </main>
+</body>
+</html>

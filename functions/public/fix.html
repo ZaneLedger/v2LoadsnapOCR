@@ -1,0 +1,70 @@
+<!-- public/fix.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fix Ticket – LoadSnap OCR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./fix.js"></script>
+  <style>
+    #zoomModal {
+      background-color: rgba(0, 0, 0, 0.85);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-lg rounded-lg max-w-2xl w-full p-6 relative">
+    <h1 class="text-2xl font-bold text-blue-800 mb-4">Fix Ticket</h1>
+
+    <div id="loading" class="text-center text-gray-500 mb-4">Loading ticket...</div>
+    <div id="error" class="hidden text-red-600 mb-4"></div>
+
+    <form id="fixForm" class="hidden space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Ticket Number</label>
+        <input id="ticketNumber" type="text" class="mt-1 block w-full border border-gray-300 rounded px-3 py-2 bg-gray-100" disabled />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Weight (tons)</label>
+        <input id="weightTons" type="number" step="0.01" class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Truck Number</label>
+        <input id="truckNumber" type="text" class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Driver Name</label>
+        <input id="driverActual" type="text" class="mt-1 block w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+
+      <div class="flex gap-4">
+        <button type="submit"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+          Save Fix
+        </button>
+        <button type="button" id="discardBtn"
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+          Discard Ticket
+        </button>
+      </div>
+    </form>
+
+    <!-- ✅ Ticket Image Preview -->
+    <div id="imageWrapper" class="mt-6 hidden">
+      <h2 class="text-sm font-medium text-gray-700 mb-2">Ticket Image</h2>
+      <img id="ticketImage"
+           alt="Ticket Preview"
+           class="cursor-zoom-in border rounded w-full max-h-[500px] object-contain bg-gray-50 shadow" />
+    </div>
+
+    <div id="success" class="hidden text-green-600 mt-4">✅ Ticket updated successfully.</div>
+  </div>
+
+  <!-- Zoom Modal -->
+  <div id="zoomModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <img id="zoomImage" class="max-w-full max-h-full rounded shadow-lg border-4 border-white" />
+  </div>
+</body>
+</html>

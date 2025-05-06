@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manual Ticket Entry – LoadSnap OCR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./manual_entry.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-xl rounded-lg max-w-3xl w-full p-6 space-y-6 border-t-4 border-[#0069A7]">
+    <h1 class="text-2xl font-bold text-[#0069A7] text-center">Manual Ticket Entry</h1>
+
+    <form id="manualForm" class="space-y-8">
+
+      <!-- DRIVER INFO -->
+      <div>
+        <h2 class="text-xs font-semibold uppercase text-gray-500 border-t pt-4 mb-4">Driver Info</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Driver Badge</label>
+            <input id="driverBadge" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Driver Actual</label>
+            <input id="driverActual" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+        </div>
+      </div>
+
+      <!-- LOAD DETAILS -->
+      <div>
+        <h2 class="text-xs font-semibold uppercase text-gray-500 border-t pt-4 mb-4">Load Info</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Ticket Number <span class="text-red-500">*</span></label>
+            <input id="ticketNumber" type="text" required class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Weight (tons) <span class="text-red-500">*</span></label>
+            <input id="weightTons" type="number" step="0.01" required class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Truck Number <span class="text-red-500">*</span></label>
+            <input id="truckNumber" type="text" required class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Capacity</label>
+            <input id="capacity" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Debris Type</label>
+            <input id="debrisType" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Load Call</label>
+            <input id="loadCall" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Program/Job</label>
+            <input id="programJob" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+        </div>
+      </div>
+
+      <!-- DISPOSAL INFO -->
+      <div>
+        <h2 class="text-xs font-semibold uppercase text-gray-500 border-t pt-4 mb-4">Disposal Info</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Disposal Date/Time</label>
+            <input id="DisposalDateTime" type="datetime-local" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Contractor</label>
+            <input id="contractor" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Disposal Site (Final) <span class="text-red-500">*</span></label>
+            <input id="disposalSiteFinal" type="text" required class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Pickup Site (DMS)</label>
+            <input id="dms" type="text" class="w-full border border-gray-300 rounded px-3 py-2" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Notes</label>
+            <textarea id="notes" rows="2" class="w-full border border-gray-300 rounded px-3 py-2"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE UPLOAD -->
+      <div>
+        <h2 class="text-xs font-semibold uppercase text-gray-500 border-t pt-4 mb-4">Upload Image</h2>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Attach Ticket Image <span class="text-red-500">*</span></label>
+          <input id="imageInput" type="file" accept="image/*" required class="mt-1" />
+        </div>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="md:col-span-2 flex flex-col md:flex-row gap-4 pt-4">
+        <button type="submit" class="bg-[#FFC629] hover:bg-yellow-400 text-[#482366] font-semibold py-2 px-4 rounded w-full">
+          Submit Ticket
+        </button>
+        <button type="button" id="newEntryBtn" class="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-semibold py-2 px-4 rounded w-full">
+          Enter Another
+        </button>
+      </div>
+
+      <div class="text-center pt-2">
+        <a href="./driver_dashboard.html" class="text-sm text-blue-700 hover:underline">← Return to Dashboard</a>
+      </div>
+
+      <div id="status" class="text-center text-sm text-green-600 hidden mt-2">✅ Ticket submitted successfully.</div>
+      <div id="error" class="text-center text-sm text-red-600 hidden mt-2">❌ Error submitting ticket. Check required fields.</div>
+
+    </form>
+  </div>
+</body>
+</html>

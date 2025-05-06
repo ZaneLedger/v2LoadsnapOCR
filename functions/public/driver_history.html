@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoadSnap OCR - Driver History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="./firebase.js" type="module"></script>
+
+  <script src="./driver_history.js" type="module" defer></script>
+
+  </head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-blue-800 text-white p-4 text-center text-2xl font-bold flex justify-between items-center">
+    <span>My Submitted Tickets</span>
+    <button id="logoutButton" class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-1 px-3 rounded hidden">Logout</button>
+  </header>
+
+  <main id="driverTicketList" class="flex-1 p-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    
+    <p id="loadingMessage" class="text-gray-600 text-center md:col-span-2 lg:col-span-3">Checking login status...</p>
+
+  </main>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+  </style>
+
+</body>
+</html>

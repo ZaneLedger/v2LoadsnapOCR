@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Driver Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./driver_dashboard.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between p-4 bg-white shadow">
+    <h1 class="text-lg font-bold">Tickets Needing Action</h1>
+    <button id="logoutButton" class="text-sm text-blue-600 hover:underline">Logout</button>
+  </header>
+
+  <!-- Upload CTA -->
+  <section class="flex flex-col items-center py-6">
+    <a href="driver_upload.html" class="flex flex-col items-center text-blue-700 hover:text-blue-900 transition-transform hover:scale-105">
+      <div class="w-20 h-20 mb-3 bg-blue-100 rounded-full flex items-center justify-center shadow-lg ring-2 ring-blue-300">
+        <span class="text-3xl">📷</span>
+      </div>
+      <span class="text-xl font-bold">Upload / Scan Ticket</span>
+    </a>
+  </section>
+
+  <!-- Tickets Section -->
+  <main class="px-4 space-y-6 mt-4">
+    <h2 class="text-lg font-bold mb-4">Your Tickets Needing Action</h2>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="hidden flex flex-col items-center justify-center text-center text-gray-500 mt-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13M9 5H5a2 2 0 00-2 2v12a2 2 0 002 2h4m0-2h6" />
+      </svg>
+      <p class="text-lg font-semibold">You’re all caught up</p>
+      <p class="text-sm mt-1">No tickets need action right now.</p>
+    </div>
+
+    <!-- TICKET CONTAINER -->
+    <div id="ticketContainer" class="space-y-6"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-8 flex justify-center">
+    <a href="driver_history.html" class="text-sm text-gray-600 hover:underline">View Full History</a>
+  </footer>
+
+</body>
+</html>
+

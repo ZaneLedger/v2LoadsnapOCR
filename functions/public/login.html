@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - LoadSnap OCR</title>
+</head>
+<body>
+  <h1>Sign In</h1>
+  <button id="loginButton">Sign in with Google</button>
+  <p id="errorMessage"></p>
+
+  <script type="module">
+    import { auth } from './firebase.js';
+    import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+
+    const loginButton = document.getElementById("loginButton");
+    const errorMessage = document.getElementById("errorMessage");
+
+    loginButton.addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        const userCredential = await signInWithPopup(auth, provider);
+        console.log("Logged in as:", userCredential.user.email);
+        window.location.href = '/manager_dashboard.html';  // Redirect after successful login
+      } catch (error) {
+        console.error("Login error:", error);
+        errorMessage.textContent = `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
