@@ -1,3 +1,5 @@
+// public/driver_dashboard.js
+
 import { auth, db } from "./firebase.js";
 import {
   onAuthStateChanged,
@@ -21,6 +23,11 @@ onAuthStateChanged(auth, async (user) => {
   const ticketContainer = document.getElementById("ticketContainer");
   const emptyState = document.getElementById("emptyState");
 
+  if (!ticketContainer || !emptyState) {
+    console.error("Missing container elements in DOM.");
+    return;
+  }
+
   try {
     const ticketsRef = collection(db, "tickets");
     const q = query(
@@ -37,6 +44,7 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
+    ticketContainer.innerHTML = ""; // Clear existing entries
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const ticketId = doc.id;
@@ -84,6 +92,7 @@ onAuthStateChanged(auth, async (user) => {
     });
   } catch (error) {
     console.error("Failed to load tickets:", error);
+    ticketContainer.style.display = "none";
     emptyState.classList.remove("hidden");
   }
 });

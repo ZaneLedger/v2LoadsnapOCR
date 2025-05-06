@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload Ticket – LoadSnap OCR</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="./firebase.js"></script>
   <script type="module" src="./driver_upload.js"></script>
 </head>
 <body class="bg-gray-900 min-h-screen flex items-center justify-center p-6 bg-[url('/camera-bg.jpg')] bg-cover bg-center">
-  <div class="bg-white/90 backdrop-blur-md shadow-lg rounded-lg max-w-md w-full p-6 space-y-5">
+  <div id="uploadBox" class="bg-white/90 backdrop-blur-md shadow-lg rounded-lg max-w-md w-full p-6 space-y-5">
     <h1 class="text-xl font-bold text-blue-800 text-center">Scan or Upload Ticket</h1>
 
     <!-- Camera Option -->
@@ -30,11 +30,78 @@
     <input id="fileInput" type="file" accept="image/*" class="hidden" />
 
     <!-- Upload Button -->
-    <button id="uploadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold">
+    <button id="uploadButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold" disabled>
       Upload Ticket
     </button>
 
-    <div id="status" class="text-center text-sm text-gray-600">Choose a method to submit your ticket.</div>
+    <div id="selectedFile" class="text-center text-xs text-gray-500">No file selected</div>
+    <div id="statusMessage" class="text-center text-sm text-gray-600">Choose a method to submit your ticket.</div>
   </div>
+
+  <!-- Hidden login box (only shown if user not logged in) -->
+  <div id="loginBox" class="hidden flex flex-col items-center justify-center text-white space-y-4">
+    <p class="text-lg">Please sign in</p>
+    <button id="loginButton" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">Sign in with Google</button>
+  </div>
+
+  <script type="module">
+    import { auth } from "./firebase.js";
+    import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+    // Firebase Auth setup
+    const loginButton = document.getElementById("loginButton");
+    const uploadButton = document.getElementById("uploadButton");
+    const loginBox = document.getElementById("loginBox");
+    const uploadBox = document.getElementById("uploadBox");
+    const selectedFile = document.getElementById("selectedFile");
+    const statusMessage = document.getElementById("statusMessage");
+
+    // Login logic
+    loginButton.addEventListener("click", async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error(error.message);
+      }
+    });
+
+    // Handle user sign-in state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User logged in
+        loginBox.classList.add("hidden");
+        uploadBox.classList.remove("hidden");
+      } else {
+        // User not logged in
+        loginBox.classList.remove("hidden");
+        uploadBox.classList.add("hidden");
+      }
+    });
+
+    // File selection logic
+    const fileInput = document.getElementById("fileInput");
+    fileInput.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) {
+        selectedFile.textContent = e.target.files[0].name;
+        uploadButton.disabled = false;
+      }
+    });
+
+    // Enable upload button when file is selected
+    const cameraInput = document.getElementById("cameraInput");
+    cameraInput.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) {
+        selectedFile.textContent = e.target.files[0].name;
+        uploadButton.disabled = false;
+      }
+    });
+
+    // Upload button logic (add your upload logic here)
+    uploadButton.addEventListener("click", () => {
+      // Implement your upload logic here, such as uploading the file to Firebase Storage
+      statusMessage.textContent = "Uploading ticket...";  // Update status message while uploading
+    });
+  </script>
 </body>
 </html>

@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In - LoadSnap OCR</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
 </head>
-<body>
-  <h1>Sign In</h1>
-  <button id="loginButton">Sign in with Google</button>
-  <p id="errorMessage"></p>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white p-6 rounded shadow w-full max-w-sm text-center">
+    <h1 class="text-xl font-bold mb-4 text-blue-700">Welcome to LoadSnap OCR</h1>
+    <p class="mb-2 text-sm text-gray-600">Sign in with your Google account to continue.</p>
+    <button id="loginButton" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full">Sign in with Google</button>
+    <p id="errorMessage" class="text-red-600 mt-4 text-sm"></p>
+  </div>
 
   <script type="module">
     import { auth } from './firebase.js';
-    import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+    import {
+      GoogleAuthProvider,
+      signInWithPopup
+    } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
 
     const loginButton = document.getElementById("loginButton");
     const errorMessage = document.getElementById("errorMessage");
@@ -20,9 +28,15 @@
     loginButton.addEventListener("click", async () => {
       const provider = new GoogleAuthProvider();
       try {
-        const userCredential = await signInWithPopup(auth, provider);
-        console.log("Logged in as:", userCredential.user.email);
-        window.location.href = '/manager_dashboard.html';  // Redirect after successful login
+        const result = await signInWithPopup(auth, provider);
+        const email = result.user.email.toLowerCase();
+
+        console.log("Logged in as:", email);
+        if (email.endsWith("@illuminenetworks.com")) {
+          window.location.href = "/manager_dashboard.html";
+        } else {
+          window.location.href = "/driver_dashboard.html";
+        }
       } catch (error) {
         console.error("Login error:", error);
         errorMessage.textContent = `Error: ${error.message}`;

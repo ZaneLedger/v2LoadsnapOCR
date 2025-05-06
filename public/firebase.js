@@ -4,12 +4,11 @@ import { getFirestore }   from "https://www.gstatic.com/firebasejs/9.22.1/fireba
 import { getStorage }     from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 import { getFunctions }   from "https://www.gstatic.com/firebasejs/9.22.1/firebase-functions.js";
 
-// ✅ Corrected config using real bucket name
 const firebaseConfig = {
   apiKey: "AIzaSyAsZ_aJEBoa_J4fH9AGKwyedEzVqRD5kj0",
   authDomain: "loadsnap-prod.firebaseapp.com",
   projectId: "loadsnap-prod",
-  storageBucket: "loadsnap-prod", // ✅ Use your actual working bucket (not appspot.com)
+  storageBucket: "loadsnap-prod.appspot.com", // ✅ CORRECT FORMAT
   messagingSenderId: "266229951076",
   appId: "1:266229951076:web:685a2bdbd338c5c2da8d71",
   measurementId: "G-GYLL7PQ590"
