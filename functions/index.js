@@ -19,7 +19,11 @@ const bucket = admin.storage().bucket();
  * processTicketOCR: triggered on new images in Storage
  */
 exports.processTicketOCR = onObjectFinalized(
-  { region: "us-central1" },
+  {
+    region: "us-central1",
+    bucket: "loadsnap-prod.appspot.com",
+    timeoutSeconds: 60
+  },
   async (event) => {
     const { name: filePath, contentType, resourceState } = event.data;
     logger.info(`Storage event for ${filePath}`, { contentType, resourceState });
