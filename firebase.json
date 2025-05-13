@@ -2,7 +2,11 @@
   "functions": {
     "source": "functions",
     "runtime": "nodejs20",
-    "platform": "gcfv2"
+    "region": "us-central1",
+    "predeploy": ["npm --prefix "$RESOURCE_DIR" install"]
+  },
+  "storage": {
+    "defaultBucket": "loadsnap-prod.appspot.com"
   },
   "hosting": {
     "public": "public",
@@ -10,24 +14,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "headers": [
-      {
-        "source": "**/*.js",
-        "headers": [
-          { "key": "Content-Type", "value": "application/javascript" }
-        ]
-      }
-    ],
-    "cleanUrls": true,
-    "rewrites": [
-      { "source": "/manager_dashboard.html",  "destination": "/manager_dashboard.html" },
-      { "source": "/driver_upload.html",      "destination": "/driver_upload.html" },
-      { "source": "/driver_dashboard.html",   "destination": "/driver_dashboard.html" },
-      { "source": "/**",                      "destination": "/404.html" }
     ]
-  },
-  "firestore": {
-    "rules": "firestore.rules"
   }
 }
